@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Scott Chamberlain and Jeroen Ooms" />
 
-<meta name="date" content="2017-02-28" />
+<meta name="date" content="2017-10-23" />
 
 <title>geojson operations</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">geojson operations</h1>
 <h4 class="author"><em>Scott Chamberlain and Jeroen Ooms</em></h4>
-<h4 class="date"><em>2017-02-28</em></h4>
+<h4 class="date"><em>2017-10-23</em></h4>
 
 
 
@@ -134,7 +134,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co">#&gt; </span></code></pre></div>
 <p>Write to disk</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">geo_write</span>(y, f &lt;-<span class="st"> </span><span class="kw">tempfile</span>(<span class="dt">fileext =</span> <span class="st">&quot;.geojson&quot;</span>))
-jsonlite::<span class="kw">fromJSON</span>(f, <span class="ot">FALSE</span>)
+jsonlite<span class="op">::</span><span class="kw">fromJSON</span>(f, <span class="ot">FALSE</span>)
 <span class="co">#&gt; $type</span>
 <span class="co">#&gt; [1] &quot;GeometryCollection&quot;</span>
 <span class="co">#&gt; </span>
@@ -176,27 +176,11 @@ jsonlite::<span class="kw">fromJSON</span>(f, <span class="ot">FALSE</span>)
 <h2>properties</h2>
 <p>Add properties</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> '{ &quot;type&quot;: &quot;LineString&quot;, &quot;coordinates&quot;: [ [100.0, 0.0], [101.0, 1.0] ]}'</span>
-res &lt;-<span class="st"> </span><span class="kw">linestring</span>(x) %&gt;%<span class="st"> </span><span class="kw">feature</span>() %&gt;%<span class="st"> </span><span class="kw">properties_add</span>(<span class="dt">population =</span> <span class="dv">1000</span>)
+res &lt;-<span class="st"> </span><span class="kw">linestring</span>(x) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">feature</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">properties_add</span>(<span class="dt">population =</span> <span class="dv">1000</span>)
 res
-<span class="co">#&gt; {</span>
-<span class="co">#&gt;     &quot;type&quot;: &quot;Feature&quot;,</span>
-<span class="co">#&gt;     &quot;properties&quot;: {</span>
-<span class="co">#&gt;         &quot;population&quot;: 1000</span>
-<span class="co">#&gt;     },</span>
-<span class="co">#&gt;     &quot;geometry&quot;: {</span>
-<span class="co">#&gt;         &quot;type&quot;: &quot;LineString&quot;,</span>
-<span class="co">#&gt;         &quot;coordinates&quot;: [</span>
-<span class="co">#&gt;             [</span>
-<span class="co">#&gt;                 100,</span>
-<span class="co">#&gt;                 0</span>
-<span class="co">#&gt;             ],</span>
-<span class="co">#&gt;             [</span>
-<span class="co">#&gt;                 101,</span>
-<span class="co">#&gt;                 1</span>
-<span class="co">#&gt;             ]</span>
-<span class="co">#&gt;         ]</span>
-<span class="co">#&gt;     }</span>
-<span class="co">#&gt; }</span></code></pre></div>
+<span class="co">#&gt; &lt;Feature&gt; </span>
+<span class="co">#&gt;   type:  LineString </span>
+<span class="co">#&gt;   coordinates:  [[100,0],[101,1]]</span></code></pre></div>
 <p>Get a property</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">properties_get</span>(res, <span class="dt">property =</span> <span class="st">'population'</span>)
 <span class="co">#&gt; 1000</span></code></pre></div>
@@ -210,7 +194,7 @@ res
 <span class="st">     &quot;name&quot;: &quot;urn:ogc:def:crs:OGC:1.3:CRS84&quot;</span>
 <span class="st">  }</span>
 <span class="st">}'</span>
-z &lt;-<span class="st"> </span>x %&gt;%<span class="st"> </span><span class="kw">feature</span>() %&gt;%<span class="st"> </span><span class="kw">crs_add</span>(crs)
+z &lt;-<span class="st"> </span>x <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">feature</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">crs_add</span>(crs)
 z
 <span class="co">#&gt; {</span>
 <span class="co">#&gt;     &quot;type&quot;: &quot;Feature&quot;,</span>
@@ -249,7 +233,7 @@ z
 <div id="bbox" class="section level2">
 <h2>bbox</h2>
 <p>Add bbox - by default, if you don’t pass a bbox into <code>bbox_add()</code> we attempt to calculate the bbox for you. You can also pass in your own bbox.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tt &lt;-<span class="st"> </span>x %&gt;%<span class="st"> </span><span class="kw">feature</span>() %&gt;%<span class="st"> </span><span class="kw">bbox_add</span>()
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tt &lt;-<span class="st"> </span>x <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">feature</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">bbox_add</span>()
 tt
 <span class="co">#&gt; {</span>
 <span class="co">#&gt;     &quot;type&quot;: &quot;Feature&quot;,</span>
@@ -291,8 +275,8 @@ tt
 <span class="co">#&gt;   coordinates:  [100,0]</span></code></pre></div>
 <p>Put the point into a <code>tbl</code></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;tibble&quot;</span>)
-<span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span>:<span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(pt))
-<span class="co">#&gt; # A tibble: 5 × 2</span>
+<span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(pt))
+<span class="co">#&gt; # A tibble: 5 x 2</span>
 <span class="co">#&gt;       a              b</span>
 <span class="co">#&gt;   &lt;int&gt;         &lt;list&gt;</span>
 <span class="co">#&gt; 1     1 &lt;S3: geopoint&gt;</span>
@@ -309,8 +293,8 @@ tt
 <span class="co">#&gt;   no. nodes / line:  2, 2 </span>
 <span class="co">#&gt;   coordinates:  [[[100,0],[101,1]],[[102,2],[103,3]]]</span></code></pre></div>
 <p>Put into a <code>tbl</code></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span>:<span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(mls))
-<span class="co">#&gt; # A tibble: 5 × 2</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(mls))
+<span class="co">#&gt; # A tibble: 5 x 2</span>
 <span class="co">#&gt;       a                        b</span>
 <span class="co">#&gt;   &lt;int&gt;                   &lt;list&gt;</span>
 <span class="co">#&gt; 1     1 &lt;S3: geomultilinestring&gt;</span>
@@ -319,8 +303,8 @@ tt
 <span class="co">#&gt; 4     4 &lt;S3: geomultilinestring&gt;</span>
 <span class="co">#&gt; 5     5 &lt;S3: geomultilinestring&gt;</span></code></pre></div>
 <p>Put the <code>point</code> and <code>multilinestring</code> into the same <code>tbl</code></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(df &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span>:<span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(pt), <span class="dt">c =</span> <span class="kw">list</span>(mls)))
-<span class="co">#&gt; # A tibble: 5 × 3</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(df &lt;-<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">a =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dt">b =</span> <span class="kw">list</span>(pt), <span class="dt">c =</span> <span class="kw">list</span>(mls)))
+<span class="co">#&gt; # A tibble: 5 x 3</span>
 <span class="co">#&gt;       a              b                        c</span>
 <span class="co">#&gt;   &lt;int&gt;         &lt;list&gt;                   &lt;list&gt;</span>
 <span class="co">#&gt; 1     1 &lt;S3: geopoint&gt; &lt;S3: geomultilinestring&gt;</span>
@@ -329,7 +313,7 @@ tt
 <span class="co">#&gt; 4     4 &lt;S3: geopoint&gt; &lt;S3: geomultilinestring&gt;</span>
 <span class="co">#&gt; 5     5 &lt;S3: geopoint&gt; &lt;S3: geomultilinestring&gt;</span></code></pre></div>
 <p>And you can pull the geojson back out</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df$b
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df<span class="op">$</span>b
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; &lt;Point&gt; </span>
 <span class="co">#&gt;   coordinates:  [100,0] </span>
@@ -349,7 +333,7 @@ tt
 <span class="co">#&gt; [[5]]</span>
 <span class="co">#&gt; &lt;Point&gt; </span>
 <span class="co">#&gt;   coordinates:  [100,0]</span>
-df$b[[<span class="dv">1</span>]]
+df<span class="op">$</span>b[[<span class="dv">1</span>]]
 <span class="co">#&gt; &lt;Point&gt; </span>
 <span class="co">#&gt;   coordinates:  [100,0]</span></code></pre></div>
 </div>
@@ -361,7 +345,7 @@ df$b[[<span class="dv">1</span>]]
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

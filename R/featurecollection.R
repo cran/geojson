@@ -28,9 +28,6 @@
 #' y <- '{ "type": "Point", "coordinates": [100.0, 50.0] }'
 #' featls <- lapply(list(x, y), function(z) feature(point(z)))
 #' featurecollection(featls)
-#'
-#' ## mixed geometry types
-#'
 featurecollection <- function(x) {
   UseMethod("featurecollection")
 }
@@ -49,8 +46,11 @@ featurecollection.character <- function(x) {
   switch_verify_names(x)
   gtype <- get_type(x)
   no_feats <- asc(jqr::jq(unclass(x), ".features | length"))
-  five_feats <- paste0(asc(jqr::jq(unclass(x), ".features[].geometry.type")),
-                       collapse = ", ")
+  five_feats <- paste0(
+    sub_n(asc(
+      jqr::jq(unclass(x), ".features[].geometry.type"))),
+    collapse = ", "
+  )
   structure(x, class = c("geofeaturecollection", "geojson"),
             type = gtype,
             no_features = no_feats,
@@ -72,7 +72,7 @@ featurecollection.list <- function(x) {
 print.geofeaturecollection <- function(x, ...) {
   cat("<FeatureCollection>", "\n")
   cat("  type: ", attr(x, 'type'), "\n")
-  cat("  no. features: ", attr(x, 'no_feats'), "\n")
+  cat("  no. features: ", attr(x, 'no_features'), "\n")
   cat("  features (1st 5): ", attr(x, 'five_feats'), "\n")
 }
 
