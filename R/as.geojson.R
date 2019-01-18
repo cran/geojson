@@ -56,6 +56,13 @@
 #' ## SpatialPolygonsDataFrame
 #' sp_polydf <- as(sp_poly, "SpatialPolygonsDataFrame")
 #' as.geojson(sp_polydf)
+#'
+#' ## sf objects
+#' if (requireNamespace('sf')) {
+#'   nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+#'   as.geojson(nc)
+#' }
+#'
 
 setGeneric("as.geojson", function(x) {
   standardGeneric("as.geojson")
@@ -65,7 +72,8 @@ setOldClass("geojson")
 
 #' @rdname as.geojson
 setMethod("as.geojson", "json", function(x){
-  stopifnot(jsonlite::validate(x))
+  jsonval <- jsonlite::validate(x)
+  if (!jsonval) stop("json invalid: ", attr(jsonval, "err"))
   structure(x, class = c("geojson", "json"))
 })
 
@@ -76,18 +84,27 @@ setMethod("as.geojson", "geojson", function(x){
 
 #' @rdname as.geojson
 setMethod("as.geojson", "character", function(x){
-  stopifnot(jsonlite::validate(x))
-  structure(x, class = c("geojson", "json"))
+  jsonval <- jsonlite::validate(x)
+  if (!jsonval) stop("json invalid: ", attr(jsonval, "err"))
+  type <- get_type(x)
+  no_feats <- feat_geom_n(x, type)
+  first5 <- feat_geom(x, type)
+  structure(x, class = c("geojson", "json"), 
+    type = type, no_features = no_feats, five_feats = first5)
 })
 
 #' @export
 print.geojson <- function(x, ...) {
+  type <- attr(x, "type")
+  no_features <- attr(x, "no_features")
+  five_feats <- attr(x, "five_feats")
   cat("<geojson>", "\n")
-  cat("  type: ", get_type(x), "\n")
-  cat("  bounding box: ", geo_bbox(x), "\n")
-  cat(feat_geom_n(x), "\n")
+  cat("  type: ", if (is.null(type)) get_type(x) else type, "\n")
+  # FIXME: geo_bbox is very slow - bring back when speeds up
+  # cat("  bounding box: ", geo_bbox(x), "\n")
+  cat(no_features, "\n")
   #if (geo_type(x) %in% c("FeatureCollection", "GeometryCollection")) {
-    cat(feat_geom(x), "\n")
+  cat(five_feats, "\n")
   #}
 }
 
@@ -104,9 +121,10 @@ get_type <- function(x) {
   }
 }
 
-feat_geom_n <- function(x) {
+feat_geom_n <- function(x, type = NULL) {
+  type <- if (is.null(type)) get_type(x) else type
   switch(
-    get_type(x),
+    type,
     Point = {
       paste0("  points (n): ", jqr::jq(unclass(x), ".coordinates | length"))
     },
@@ -134,23 +152,25 @@ feat_geom_n <- function(x) {
   )
 }
 
-feat_geom <- function(x) {
+feat_geom <- function(x, type = NULL) {
+  x <- unclass(x)
+  type <- if (is.null(type)) get_type(x) else type
   switch(
-    get_type(x),
+    type,
     Point = {
-      paste0("  coordinates: ", jqr::jq(unclass(x), ".coordinates"))
+      paste0("  coordinates: ", jqr::jq(x, ".coordinates"))
     },
     MultiPoint = {
-      paste0("  coordinates: ", dotprint(jqr::jq(unclass(x), ".coordinates")))
+      paste0("  coordinates: ", dotprint(jqr::jq(x, ".coordinates")))
     },
     Polygon = {
-      paste0("  coordinates: ", dotprint(jqr::jq(unclass(x), ".coordinates")))
+      paste0("  coordinates: ", dotprint(jqr::jq(x, ".coordinates")))
     },
     MultiPolygon = {
-      paste0("  coordinates: ", dotprint(jqr::jq(unclass(x), ".coordinates")))
+      paste0("  coordinates: ", dotprint(jqr::jq(x, ".coordinates")))
     },
     LineString = {
-      paste0("  coordinates: ", dotprint(jqr::jq(unclass(x), ".coordinates")))
+      paste0("  coordinates: ", dotprint(jqr::jq(x, ".coordinates")))
     },
     MultiLineString = {
       paste0("  coordinates: ", get_coordinates(x))
@@ -159,28 +179,28 @@ feat_geom <- function(x) {
       paste0(
         "  geometries (geometry / length):\n    ",
         paste(
-          cchar(unclass(jqr::jq(unclass(x), ".geometries[].type"))),
+          cchar(unclass(jqr::jq(x, ".geometries[].type"))),
           # FIXME - needs diff. logic for diff. object types
           cchar(
-            unclass(jqr::jq(unclass(x), ".geometries[].coordinates | length"))),
+            unclass(jqr::jq(x, ".geometries[].coordinates | length"))),
           sep = " / ", collapse = "\n    "
         )
       )
     },
     FeatureCollection = {
-      paste0(
-        "  features (geometry / length):\n    ",
-        paste(
-          gsub("\\\"", "",
-               unclass(jqr::jq(unclass(x), ".features[].geometry.type"))),
-          # FIXME - needs diff. logic for diff. object types
-          gsub("\\\"", "",
-               unclass(
-                 jqr::jq(unclass(x),
-                         ".features[].geometry.coordinates | length"))),
-          sep = " / ", collapse = "\n    "
-        )
+      # get first 5 objects
+      first5 <- jqr::jq(x, "limit(5; .features[])")
+      pieces <- paste(
+        gsub("\\\"", "",
+             unclass(jqr::jq(first5, ".geometry.type"))),
+        # FIXME - needs diff. logic for diff. object types
+        gsub("\\\"", "",
+             unclass(jqr::jq(first5, ".geometry.coordinates | length"))),
+        sep = " / "
       )
+      pieces <- paste0(pieces, collapse = "\n    ")
+      paste0(
+        "  features (geometry / length) [first 5]:\n    ", pieces)
     }
   )
 }

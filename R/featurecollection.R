@@ -17,7 +17,7 @@
 #'
 #' # add to a data.frame
 #' library('tibble')
-#' data_frame(a = 1:5, b = list(y))
+#' tibble(a = 1:5, b = list(y))
 #'
 #' # features to featurecollection
 #' x <- '{ "type": "Point", "coordinates": [100.0, 0.0] }'
@@ -46,9 +46,10 @@ featurecollection.character <- function(x) {
   switch_verify_names(x)
   gtype <- get_type(x)
   no_feats <- asc(jqr::jq(unclass(x), ".features | length"))
+  first5 <- jqr::jq(unclass(x), "limit(5; .features[])")
   five_feats <- paste0(
     sub_n(asc(
-      jqr::jq(unclass(x), ".features[].geometry.type"))),
+      jqr::jq(first5, ".geometry.type"))),
     collapse = ", "
   )
   structure(x, class = c("geofeaturecollection", "geojson"),
