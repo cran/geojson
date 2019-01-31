@@ -10,8 +10,8 @@
 #'  \item A feature object must have a member with the name "properties". The
 #'  value of the properties member is an object (any JSON object or a JSON
 #'  null value).
-#'  \item If a feature has a commonly used identifier, that identifier should be
-#'  included as a member of the feature object with the name "id".
+#'  \item If a feature has a commonly used identifier, that identifier should 
+#'  be included as a member of the feature object with the name "id".
 #' }
 #' @examples
 #' # point -> feature
@@ -37,45 +37,24 @@
 feature <- function(x) {
   UseMethod("feature")
 }
-
 #' @export
 feature.default <- function(x) {
-  stop("no method for ", class(x), call. = FALSE)
+  stop("no method for ", class(x)[1L], call. = FALSE)
 }
-
 #' @export
 feature.geofeature <- function(x) x
-
 #' @export
-feature.geopoint <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geopoint <- function(x) feat_un(x)
 #' @export
-feature.geomultipoint <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geomultipoint <- function(x) feat_un(x)
 #' @export
-feature.geolinestring <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geolinestring <- function(x) feat_un(x)
 #' @export
-feature.geomultilinestring <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geomultilinestring <- function(x) feat_un(x)
 #' @export
-feature.geopolygon <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geopolygon <- function(x) feat_un(x)
 #' @export
-feature.geomultipolygon <- function(x) {
-  feature(unclass(x))
-}
-
+feature.geomultipolygon <- function(x) feat_un(x)
 #' @export
 feature.character <- function(x) {
   json_val(x)
@@ -83,7 +62,6 @@ feature.character <- function(x) {
   x <- as_feature(x)
   verify_class_(x, "Feature")
   switch_verify_names(x)
-  coords <- get_coordinates(x)
   structure(x, class = c("geofeature", "geojson"),
             type = get_type(x),
             coords = get_coordinates(x))
@@ -97,9 +75,15 @@ print.geofeature <- function(x, ...) {
 }
 
 as_feature <- function(x) {
-  if (asc(jqr::jq(unclass(x), ".type")) == "Feature") {
+  type <- asc(jqr::jq(unclass(x), ".type"))
+  if (type == "Feature") {
     x
   } else {
+    if (!type %in% geojson_types) {
+      stop("type must be one of: ", paste0(geojson_types, collapse = ", "))
+    }
     sprintf('{ "type": "Feature", "properties": {}, "geometry": %s }', x)
   }
 }
+
+feat_un <- function(x) feature(unclass(x))

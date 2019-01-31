@@ -8,7 +8,7 @@ Description: Classes for 'GeoJSON' to make working with 'GeoJSON' easier.
     newline delimited 'GeoJSON'; linting through the 'geojsonlint' 
     package; and serializing to/from 'Geobuf' binary 'GeoJSON' 
     format.
-Version: 0.3.0
+Version: 0.3.2
 Authors@R: c(
     person("Scott", "Chamberlain", role = c("aut", "cre"), 
         email = "myrmecocystus@gmail.com",
@@ -31,9 +31,9 @@ X-schema.org-keywords: geojson, geospatial, conversion, data,
         input-output, bbox, polygon, geobuf
 X-schema.org-isPartOf: https://ropensci.org
 NeedsCompilation: no
-Packaged: 2019-01-18 19:05:38 UTC; sckott
+Packaged: 2019-01-31 06:24:33 UTC; sckott
 Author: Scott Chamberlain [aut, cre] (<https://orcid.org/0000-0003-1444-9135>),
   Jeroen Ooms [aut]
 Maintainer: Scott Chamberlain <myrmecocystus@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-01-18 19:30:04 UTC
+Date/Publication: 2019-01-31 07:13:22 UTC
