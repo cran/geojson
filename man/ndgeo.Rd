@@ -85,7 +85,7 @@ ndgeo_read(file)
 
 \dontrun{
 # read from a file
-url <- "https://storage.googleapis.com/osm-extracts.interline.io/honolulu_hawaii.geojsonl"
+url <- "https://raw.githubusercontent.com/ropensci/geojson/master/inst/examples/ndgeojson1.json"
 f <- tempfile(fileext = ".geojsonl")
 download.file(url, f)
 x <- ndgeo_read(f)
@@ -93,7 +93,7 @@ x
 unlink(f)
 
 # read from a URL
-url <- "https://storage.googleapis.com/osm-extracts.interline.io/honolulu_hawaii.geojsonl"
+url <- "https://raw.githubusercontent.com/ropensci/geojson/master/inst/examples/ndgeojson1.json"
 x <- ndgeo_read(url)
 x
 
@@ -103,7 +103,7 @@ file <- system.file("examples", 'featurecollection2.geojson',
 str <- paste0(readLines(file), collapse = " ")
 x <- featurecollection(str)
 outfile <- tempfile(fileext = ".geojson")
-ndgeo_write(x, outfile, sep = "\\u001e\\n")
+ndgeo_write(x, outfile, sep = "\u001e\n")
 con <- file(outfile)
 readLines(con)
 close(con)

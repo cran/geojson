@@ -1,5 +1,7 @@
 context("ndgeo_write")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 file <- system.file("examples", 'featurecollection2.geojson',
   package = "geojson")
 str <- paste0(readLines(file), collapse = " ")
@@ -48,7 +50,7 @@ test_that("ndgeo_read: from file", {
 })
 
 test_that("ndgeo_read: from url", {
-  url <- "https://storage.googleapis.com/osm-extracts.interline.io/honolulu_hawaii.geojsonl"
+  url <- "https://raw.githubusercontent.com/ropensci/geojson/master/inst/examples/ndgeojson1.json"
   aa <- ndgeo_read(url, verbose = FALSE)
 
   expect_is(aa, "geojson")
@@ -68,4 +70,3 @@ test_that("ndgeo_read fails well", {
   expect_error(ndgeo_read(file(z), 'x'), "is not TRUE")
   unlink(z)
 })
-

@@ -1,5 +1,7 @@
 context("geometrycollection")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 x <- '{
  "type": "GeometryCollection",
  "geometries": [
@@ -45,11 +47,9 @@ test_that("methods on geometrycollections work", {
 
   expect_match(geo_pretty(aa), "\n")
 
-  geo_write(aa, f <- tempfile())
-  expect_is(f, "character")
-
-  # cleanup
-  unlink(f)
+  f <- file(tempfile())
+  geo_write(aa, f)
+  expect_is(f, "file")
 })
 
 test_that("empty geometrycollection object works", {
@@ -73,6 +73,8 @@ test_that("geometrycollection fails well", {
 
 test_that("geometrycollection fails well with geojson linting on", {
   invisible(linting_opts(TRUE, method = "hint", error = TRUE))
+
+  skip_if_not_installed("geojsonlint")
 
   expect_error(
     geometrycollection('{"type": "GeometryCollection", "coordinates":[]}'),

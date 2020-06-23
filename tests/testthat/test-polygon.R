@@ -1,5 +1,7 @@
 context("polygon")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 # spaces
 stt <- '{ "type": "Polygon",
   "coordinates": [
@@ -31,11 +33,9 @@ test_that("methods on polygons work", {
   expect_equal(geo_bbox(aa), c(100, 0, 101, 1))
   expect_equal(geo_type(aa), "Polygon")
 
-  geo_write(aa, f <- tempfile())
-  expect_is(f, "character")
-
-  # cleanup
-  unlink(f)
+  f <- file(tempfile())
+  geo_write(aa, f)
+  expect_is(f, "file")
 })
 
 test_that("print method for polygon", {
@@ -66,7 +66,9 @@ test_that("polygon fails well", {
 })
 
 test_that("polygon fails well with geojson linting on", {
-  invisible(linting_opts(TRUE, method = "hint", error = TRUE))
+  invisible(linting_opts(TRUE, method = "hint", error = TRUE, TRUE))
+
+  skip_if_not_installed("geojsonlint")
 
   expect_error(polygon('{"type": "Polygon", "coordinates": [[100.0,0.0],[101.0,0.0]]}'),
                "a number was found where a coordinate array should have been found")

@@ -1,5 +1,7 @@
 context("point")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 # spaces
 stt <- '{ "type": "Point", "coordinates": [100.0, 0.0] }'
 aa <- point(stt)
@@ -27,11 +29,9 @@ test_that("methods on points work", {
   expect_equal(geo_bbox(aa), c(100, 0, 100, 0))
   expect_equal(geo_type(aa), "Point")
 
-  geo_write(aa, f <- tempfile())
-  expect_is(f, "character")
-
-  # cleanup
-  unlink(f)
+  f <- file(tempfile())
+  geo_write(aa, f)
+  expect_is(f, "file")
 })
 
 test_that("print method for point", {
@@ -61,6 +61,8 @@ test_that("point fails well", {
 
 test_that("point fails well with geojson linting on", {
   invisible(linting_opts(TRUE, method = "hint", error = TRUE))
+
+  skip_if_not_installed("geojsonlint")
 
   expect_error(point('{"type": "Point", "coordinates": []}'),
                "position must have 2 or more elements")

@@ -4,21 +4,29 @@
 \alias{linting_opts}
 \title{GeoJSON Linting}
 \usage{
-linting_opts(lint = FALSE, method = "hint", error = FALSE)
+linting_opts(
+  lint = FALSE,
+  method = "hint",
+  error = FALSE,
+  suppress_pkgcheck_warnings = FALSE
+)
 }
 \arguments{
 \item{lint}{(logical) lint geojson or not. Default: \code{FALSE}}
 
 \item{method}{(character) method to use:
 \itemize{
-\item hint - uses \code{\link[geojsonlint]{geojson_hint}}
-\item lint - uses \code{\link[geojsonlint]{geojson_lint}}
-\item validate - uses \code{\link[geojsonlint]{geojson_validate}}
+\item hint - uses \code{geojsonlint::geojson_hint()}
+\item lint - uses \code{geojsonlint::geojson_lint()}
+\item validate - uses \code{geojsonlint::geojson_validate()}
 }}
 
 \item{error}{(logical) Throw an error on parse failure? If \code{TRUE}, then
 function returns \code{TRUE} on success, and stop with the error
 message on error. Default: \code{FALSE}}
+
+\item{suppress_pkgcheck_warnings}{(logical) Suppress warning when
+\code{geojsonlint} is not installed? Default: \code{FALSE}}
 }
 \description{
 GeoJSON Linting

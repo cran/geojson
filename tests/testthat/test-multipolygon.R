@@ -1,5 +1,7 @@
 context("multipolygon")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 # spaces
 stt <- '{ "type": "MultiPolygon",
 "coordinates": [
@@ -33,11 +35,9 @@ test_that("methods on multipolygons work", {
   expect_equal(geo_bbox(aa), c(2, 2, 102, 103))
   expect_equal(geo_type(aa), "MultiPolygon")
 
-  geo_write(aa, f <- tempfile())
-  expect_is(f, "character")
-
-  # cleanup
-  unlink(f)
+  f <- file(tempfile())
+  geo_write(aa, f)
+  expect_is(f, "file")
 })
 
 test_that("print method for multipolygon", {
@@ -81,6 +81,8 @@ test_that("multipolygon fails well", {
 
 test_that("multipolygon fails well with geojson linting on", {
   invisible(linting_opts(TRUE, method = "hint", error = TRUE))
+
+  skip_if_not_installed("geojsonlint")
 
   expect_error(multipolygon('{"type": "MultiPolygon", "coordinates": [1]}'),
                "a number was found where a coordinate array should")

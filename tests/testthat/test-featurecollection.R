@@ -1,5 +1,7 @@
 context("featurecollection")
 
+invisible(linting_opts(suppress_pkgcheck_warnings = TRUE))
+
 file <- system.file("examples", "featurecollection2.geojson",
   package = "geojson")
 str <- paste0(readLines(file), collapse = " ")
@@ -29,11 +31,9 @@ test_that("methods on featurecollections work", {
   expect_equal(as.character(geo_bbox(aa)[1]), "-49.277263")
   expect_equal(geo_type(aa), "FeatureCollection")
 
-  geo_write(aa, f <- tempfile())
-  expect_is(f, "character")
-
-  # cleanup
-  unlink(f)
+  f <- file(tempfile())
+  geo_write(aa, f)
+  expect_is(f, "file")
 })
 
 test_that("empty featurecollection object works", {
@@ -55,7 +55,9 @@ test_that("featurecollection fails well", {
 })
 
 test_that("featurecollection fails well with geojson linting on", {
-  invisible(linting_opts(TRUE, method = "hint", error = TRUE))
+  invisible(linting_opts(TRUE, method = "hint", error = TRUE, TRUE))
+
+  skip_if_not_installed("geojsonlint")
 
   expect_error(
     featurecollection('{"type": "featurecollection", "coordinates": [[]]}'),
